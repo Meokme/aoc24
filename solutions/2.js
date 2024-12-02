@@ -1,49 +1,18 @@
-function part1(input)
-{
-   const lines = require('./common').getLines(input);
+const { getLines } = require('./common');
 
-   return lines.filter(isReportSafe).length;
-}
+const part1 = input => getLines(input).filter(report => isSafe(getLevels(report))).length;
+const part2 = input => getLines(input).filter(report => {
+  const levels = getLevels(report);
+  return isSafe(levels) || levels.some((_, i) => isSafe(levels.slice(0, i).concat(levels.slice(i + 1))));
+}).length;
 
-function isReportSafe(report) {
-   const levels = report.split(' ').map(Number);
-   return isSafe(levels);
-}
+const getLevels = report => report.split(' ').map(Number);
 
-function isSafe(levels)
-{
-   const isIncreasing      = levels.every((val, i, arr) => i === 0 || val >= arr[i - 1]);
-   const isDecreasing      = levels.every((val, i, arr) => i === 0 || val <= arr[i - 1]);
-   const isValidDifference = levels.every((val, i, arr) => i === 0 || (Math.abs(val - arr[i - 1]) >= 1 && Math.abs(val - arr[i - 1]) <= 3));
+const isSafe = levels => {
+  const isIncreasing = levels.every((val, i, arr) => i === 0 || val >= arr[i - 1]);
+  const isDecreasing = levels.every((val, i, arr) => i === 0 || val <= arr[i - 1]);
+  const isValidDifference = levels.every((val, i, arr) => i === 0 || Math.abs(val - arr[i - 1]) >= 1 && Math.abs(val - arr[i - 1]) <= 3);
+  return (isIncreasing || isDecreasing) && isValidDifference;
+};
 
-   return (isIncreasing || isDecreasing) && isValidDifference;
-}
-
-function part2(input)
-{
-   const lines = require('./common').getLines(input);
-
-   return lines.filter(isReportSafeWithDampener).length;
-}
-
-function isReportSafeWithDampener(report)
-{
-   const levels = report.split(' ').map(Number);
-   if (isSafe(levels))
-   {
-      return true;
-   }
-
-   for (let i = 0; i < levels.length; i++)
-   {
-      const modifiedLevels = levels.slice(0, i).concat(levels.slice(i + 1));
-      if (isSafe(modifiedLevels))
-      {
-         return true;
-      }
-   }
-
-   return false;
-}
-
-module.exports = {part1, part2};
+module.exports = { part1, part2 };

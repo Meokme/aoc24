@@ -1,5 +1,3 @@
-function getLines(input) {
-  return input.trim().split('\n');
-}
+const getLines = input => input.trim().split('\n');
 
 module.exports = { getLines };
